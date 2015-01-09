@@ -24,6 +24,7 @@ h1, h2, h3, h4, h5, h6 {
 #cancer-chartFrame{
   width: 970px;
   height: 550px;
+  margin-left: 50px;
   -webkit-transition: height ease-in-out 1s;  
   -moz-transition: height ease-in-out 1s;    
   -o-transition: height ease-in-out 1s;    
@@ -105,7 +106,7 @@ h1, h2, h3, h4, h5, h6 {
   height: 8px;
   background: url(http://graphics8.nytimes.com/packages/images/newsgraphics/2012/0202-federal-budget/tail_white.png) 50% 0%;
 }
-#cancer-tooltip .cancer-department {
+#cancer-tooltip .cancer-country {
   text-transform: uppercase;
   text-align: left;
   font-size: 10px;
@@ -121,7 +122,7 @@ h1, h2, h3, h4, h5, h6 {
   width:130px;
 }
 
-#cancer-tooltip .cancer-discretion{
+#cancer-tooltip .cancer-gender{
   color:#666;
 /*   text-transform:uppercase;*/
   font-size: 11px;   

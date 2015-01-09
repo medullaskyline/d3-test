@@ -160,21 +160,21 @@
     <div id="cancer-chart">
       <div class="cancer-navBar">
         <ul class="cancer-navigation clearfix">
+          <!-- these ids may be extraneous -->
           <li id="cancer-nav-all">All BLCA</li>
-          <li id="cancer-nav-mandatory">By Gender</li>
-          <li id="cancer-nav-discretionary">By Age</li>
-          <li id="cancer-nav-department">By Country</li>
+          <li id="cancer-nav-gender">By Gender</li>
+          <li id="cancer-nav-age">By Age</li>
+          <li id="cancer-nav-country">By Country</li>
         </ul>
       </div>
       <div id="cancer-tooltip">
         <div id="cancer-tooltipContainer">
-          <div class="cancer-department"></div>
+          <div class="cancer-country"></div>
           <div class="cancer-rule"></div>
           <div class="cancer-name"></div>
-          <div class="cancer-discretion"></div>
+          <div class="cancer-gender"></div>
           <div class="cancer-valuesContainer">
             <span class="cancer-value"></span>
-            <span class="cancer-change"></span>
           </div>
           <div class="cancer-chart"></div>
           <div class="cancer-tail"></div>         
@@ -184,36 +184,22 @@
       <div id="cancer-overlays">
         <div class="cancer-overlay" id="cancer-totalOverlay">
           <div class="cancer-overview">
-            <h5>Circles are sized according to tumor weight.</h5>
-            <!-- <p>Mr Obama's budget proposal includes $3.7 trillion in spending in 2013, and forecasts a $901 billion deficit.</p> -->
-              <!-- <svg id="cancer-deficitCircle"></svg> -->
+            <h5>Lorem ipsum dolor sit amet.</h5>
+            <p>Augue corpora dignissim ea usu, ut alia ipsum sonet nec. Case vero persecuti duo an. Pro blandit abhorreant no. Error ludus ius ei.</p>
           </div>
-<!--           <div class="cancer-aside">
-            <p>The proposal forecasts a $901 billion deficit.</p>
+ <!--          <div class="cancer-aside">
+            <p>Sed denique scripserit ad, ornatus ancillae accusata ex pri.</p>
           </div> -->
-          <div class="cancer-increasesLabel">
+          <div class="cancer-olderLabel">
             <span>Oldest Age at Diagnosis</span>
           </div>
-          <div class="cancer-decreasesLabel">
+          <div class="cancer-youngerLabel">
             <span>Youngest Age at Diagnosis</span>
           </div>
           <div id="cancer-colorKey">
-            <!-- <p>Circles are sized according to tumor weight.</p> -->
+            <p>Circles are sized according to tumor weight.</p>
           <div id="cancer-sizeKey">
-<!--             <div style="left:52px;top:23px;width:20px;" class="cancer-circleKeyLabel">
-              <span style="left:25px;">1000 g</span>
-            </div>
-            <div style="left:32px;top:42px;" class="cancer-circleKeyLabel">
-              <span>500 g</span>
-            </div>
-            <div style="left:32px;top:57px;" class="cancer-circleKeyLabel">
-              <span>10 g</span>
-            </div> -->
-            <svg id="cancer-scaleKey">
-<!--               <circle r="22" class="cancer-scaleKeyCircle" cx="30" cy="34"></circle>
-              <circle r="12" class="cancer-scaleKeyCircle" cx="30" cy="44"></circle>
-              <circle r="2.2" class="cancer-scaleKeyCircle" cx="30" cy="55"></circle> -->
-            </svg>
+            <svg id="cancer-scaleKey"></svg>
           </div>
             <p>Color shows age at first diagnosis.</p>
             <ul class="cancer-colorSwatches">
@@ -246,30 +232,27 @@
             </ul>
           </div>
         </div>
-        <div class="cancer-overlay" id="cancer-mandatoryOverlay">
-          <div class="cancer-mandatoryExplainer"></div>
-          <div class="cancer-mandatoryAside">
-            <h5>Mandatory</h5>
-            <p><strong style="font-size:16px; padding-bottom:4px;display:block;">$2.5 trillion</strong></p>
-            <p>About 70 percent of budgetary spending is controlled by existing laws, including entitlements like Medicare, Medicaid and Social Security.</p>
+        <div class="cancer-overlay" id="cancer-genderOverlay">
+          <div class="cancer-maleExplainer"></div>
+          <div class="cancer-maleAside">
+            <h5>Male</h5>
+            <p><strong style="font-size:16px; padding-bottom:4px;display:block;">Number</strong></p>
+            <p>Vulputate suscipiantur vim cu, quo agam cetero suscipit et. Te usu quidam integre torquatos, quo quem inimicus ea.</p>
           </div>
-          <div class="cancer-discretionaryExplainer"></div>
-          <div class="cancer-discretionaryAside">
-            <h5>Discretionary</h5>
-            <p><strong style="font-size:16px; padding-bottom:4px;display:block;">$1.1 trillion</strong></p>
-            <p>Only about 30 percent of the budget is controlled by the annual budget process. Last August, the White House and Congress agreed to a cap on this spending.</p>
-          </div>
-        </div>
-        <div class="cancer-overlay" id="cancer-discretionaryOverlay">
-          <div id="cancer-discretionaryIntro">
-            <h5>Changes to Discretionary Spending</h5>
-            <p>Discretionary spending is controlled by the annual budget process. The White House and Congress agreed to a cap in spending in August, so proposed increases in categories like education and energy require cuts in other areas.</p>
+          <div class="cancer-femaleExplainer"></div>
+          <div class="cancer-femaleAside">
+            <h5>Female</h5>
+            <p><strong style="font-size:16px; padding-bottom:4px;display:block;">Number</strong></p>
+            <p>Tacimates suscipiantur et vix, aperiam oportere hendrerit sea no, liber dolores erroribus eam et. Ea corpora luptatum contentiones mea, an dicam commodo mel.</p>
           </div>
         </div>
-        <div class="cancer-overlay" id="cancer-departmentOverlay">
-          <p class="cancer-emptyCircleLabel">Empty circles show income.</p>
+        <div class="cancer-overlay" id="cancer-ageOverlay">
+          <div id="cancer-ageIntro">
+            <h5>Variations in Age of First Diagnosis</h5>
+            <p>No eam vitae delenit vituperata, falli sententiae mei ea. An brute augue philosophia sit, nam albucius voluptua referrentur et. Mei ex inani tation epicuri. Sea at eleifend imperdiet, feugiat noluisse per te. Ut per error albucius.</p>
+          </div>
         </div>
-        <div class="cancer-overlay" id="cancer-comparisonOverlay"></div>
+        <div class="cancer-overlay" id="cancer-countryOverlay"></div>
       </div>
       <div id="cancer-chartCanvas"></div>
     </div>

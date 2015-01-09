@@ -53,27 +53,27 @@
   text-align: center;
 }
 
-.cancer-increasesLabel {
+.cancer-olderLabel {
   position: absolute;
   top: 100px;
   left: 540px;
   width: 60px;
   border-top: dashed 1px rgba(0,0,0,0.2);
 }
-.cancer-increasesLabel span {
+.cancer-olderLabel span {
   position: absolute;
   right: -105px;
   top: -10px;
   width: 100px;
 }
-.cancer-decreasesLabel {
+.cancer-youngerLabel {
   position: absolute;
   top: 470px;
   left: 560px;
   width: 60px;
   border-top: dashed 1px rgba(0,0,0,0.2);
 }
-.cancer-decreasesLabel span {
+.cancer-youngerLabel span {
   position: absolute;
   right: -105px;
   top: -10px;
@@ -198,13 +198,13 @@
 
 
 
-/*Mandatory*/
+/*gender*/
 
-#cancer-mandatoryOverlay {
+#cancer-genderOverlay {
   
 }
 
-.cancer-discretionaryExplainer {
+.cancer-femaleExplainer {
   text-align: center;
   left: 550px;
   top: 100px;
@@ -213,7 +213,7 @@
 }
 
 
-.cancer-mandatoryExplainer {
+.cancer-maleExplainer {
   text-align: center;
   left: 150px;
   top: 80px;
@@ -221,44 +221,44 @@
   width: 340px;
 }
 
-.cancer-discretionaryAside {
+.cancer-femaleAside {
   position: absolute;
   left: 800px;
   top: 120px;
   width: 130px;
 }
 
-.cancer-mandatoryAside {
+.cancer-maleAside {
   position: absolute;
   left: 30px;
   top: 120px;
   width: 140px;
 }
 
-/*By Change*/
-#cancer-discretionaryIntro {
+/*By age*/
+#cancer-ageIntro {
   top: 80px;
   left: 10px;
   width: 500px;
   position: absolute;
 }
-.cancer-discretionaryTickLabel {
+.cancer-ageTickLabel {
   width: 200px;
   position: absolute;
   left: 10px;
 }
-.cancer-discretionaryTickLabel p {
+.cancer-ageTickLabel p {
   position:relative;
   top: -6px;
   font-size: 10px;
 }
-.cancer-discretionaryTick {
+.cancer-ageTick {
   position: absolute;
   border-top: dashed 1px #CCC;
   left: 60px;
   width: 900px;
 }
-.cancer-discretionaryTick p {
+.cancer-ageTick p {
   font-size: 10px;
   text-align: left;
   position: absolute;
@@ -266,20 +266,20 @@
   width: 40px;
   top: -8px;
 }
-.cancer-discretionaryZeroTick {
+.cancer-ageZeroTick {
   border-top: solid 1px #AAA;
   left: 10px;
   width: 950px;
 }
 
 
-/*Department*/
-.cancer-departmentAnnotation {
+/*country*/
+.cancer-countryAnnotation {
   position: absolute;
   z-index: 1000;
 }
 
-.cancer-departmentAnnotation p {
+.cancer-countryAnnotation p {
   font-size: 12px;
   line-height: 1.2em;
   text-align: center;
@@ -287,59 +287,50 @@
   padding: 0;
 }
 
-.cancer-departmentAnnotation p.total {
+.cancer-countryAnnotation p.total {
   font-weight: bold;
   margin-bottom: 0.3em;
   color:#000;
 }
-.cancer-departmentAnnotation p.total {
+.cancer-countryAnnotation p.total {
   font-weight: bold;  
 }
 
-.cancer-departmentAnnotation.cancer-row0 p {
+.cancer-countryAnnotation.cancer-row0 p {
   font-size: 14px;
 }
-.cancer-departmentAnnotation.cancer-row0 p.total {
+.cancer-countryAnnotation.cancer-row0 p.total {
   font-size: 16px;
 }
-.cancer-departmentAnnotation.cancer-row1 p{
+.cancer-countryAnnotation.cancer-row1 p{
   font-size: 11px;
 }
-.cancer-departmentAnnotation.cancer-row1 p.total{
+.cancer-countryAnnotation.cancer-row1 p.total{
   font-size: 13px;
 }
 
-.cancer-departmentAnnotation.cancer-row2 p{
+.cancer-countryAnnotation.cancer-row2 p{
   font-size: 10px;
 }
-.cancer-departmentAnnotation.cancer-row2 p.total{
+.cancer-countryAnnotation.cancer-row2 p.total{
   font-size: 12px;
 }
 
-.cancer-departmentAnnotation.cancer-row3 p{
+.cancer-countryAnnotation.cancer-row3 p{
   font-size: 10px;
 }
-.cancer-departmentAnnotation.cancer-row3 p.total{
+.cancer-countryAnnotation.cancer-row3 p.total{
   font-size: 12px;
 }
-.cancer-departmentAnnotation.cancer-row4 p{
+.cancer-countryAnnotation.cancer-row4 p{
   font-size: 10px;
 }
-.cancer-departmentAnnotation.cancer-row4 p.total{
+.cancer-countryAnnotation.cancer-row4 p.total{
   font-size: 12px;
 }
 
 
-/*Department*/
-#cancer-departmentOverlay p.cancer-emptyCircleLabel{
-  position: absolute;
-  left: 125px;
-  top: 280px;
-  width: 80px;
-  text-align: center;
-  color: #999;
-  font-size: 11px;
-  line-height: 1.45em;
-  font-style: italic;
+/*country*/
+#cancer-countryOverlay{
   
 }

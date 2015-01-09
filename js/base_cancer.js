@@ -59,8 +59,8 @@ function do_everything(){ // formerly cancer.ready = function() {
       this.currentOverlay.delay(300).fadeIn(500);
       $j("#cancer-chartFrame").css({'height':650});
     } else if (tabIndex === 3){
-      cancer.c.raceLayout();
-      this.currentOverlay = $j("#cancer-raceOverlay");
+      cancer.c.countryLayout();
+      this.currentOverlay = $j("#cancer-countryOverlay");
       this.currentOverlay.delay(300).fadeIn(500);
       $j("#cancer-chartFrame").css({'height':850});
     }

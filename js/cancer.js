@@ -212,7 +212,7 @@ cancer.Chart = function(){
     circle          : {},
     gravity         : null,
     charge          : null,
-    changeTickValues: [-0.25, -0.15, -0.05, 0.05, 0.15, 0.25], 
+    // changeTickValues: [-0.25, -0.15, -0.05, 0.05, 0.15, 0.25], 
     ageTickValues: [20, 30, 40, 50, 60, 70, 80],
     categorizeChange: function(c){ // formerly 2012-2013 , now age at diagnosis
                         if (isNaN(c)) { return 0;
@@ -235,41 +235,29 @@ cancer.Chart = function(){
                         } else if ( c <= 80){ return 7;
                         } else { return 8; }
                       },
-    fillColor       : d3.scale.ordinal().domain([-3,-2,-1,0,1,2,3]).range(["#d84b2a", "#ee9586","#e4b7b2","#AAA","#beccae", "#9caf84", "#7aa25c"]),
-    strokeColor     : d3.scale.ordinal().domain([-3,-2,-1,0,1,2,3]).range(["#c72d0a", "#e67761","#d9a097","#999","#a7bb8f", "#7e965d", "#5a8731"]),
     fillColorAge    : d3.scale.ordinal().domain([8,7,6,5,4,3,2,1]).range(["#19022a", "#43013a", "#5f0046", "#9e002f", "#ce1129", "#f6441a", "#f68617", "#ffa61e"]),
-    strokeColorAge  : d3.scale.ordinal().domain([8,7,6,5,4,3,2,1]).range(["#19022a", "#43013a", "#5f0046", "#9e002f", "#ce1129", "#f6441a", "#f68617", "#ffa61e"]),
+    strokeColorAge  : d3.scale.ordinal().domain([8,7,6,5,4,3,2,1]).range(["#4F3D5C", "#52394E", "#470235", "#780024", "#961223", "#BD3515", "#C46C14", "#D48A19"]),
     
     getFillColor    : null,
     getStrokeColor  : null,
     pFormat         : d3.format("+.1%"), // not necessary for cancer?
     pctFormat       : function(){return false}, // not necessary for cancer?
-    tickChangeFormat: d3.format("+%"), // not necessary for cancer
+    // tickChangeFormat: d3.format("+%"), // not necessary for cancer
     simpleFormat    : d3.format(","), // not necessary for cancer?
     simpleDecimal   : d3.format(",.2f"),
 
     bigFormat       : function(n){return cancer.formatNumber(n*1000)}, // not necessary for cancer
     nameFormat      : function(n){return n},
-    discretionFormat: function(d){ // not necessary for cancer
-                        if (d == 'Discretionary' || d == 'Mandatory') {
-                          return d + " spending"
-                        } else {return d}
-                      },  
-    
-    rScale          : d3.scale.pow().exponent(0.5).domain([0,3600]).range([1,90]),
+  
+    rScale          : d3.scale.pow().exponent(0.5).domain([0,3600]).range([1,50]), // calculate range max from total value
     radiusScale     : null,
     changeScale     : d3.scale.linear().domain([-0.28,0.28]).range([620,180]).clamp(true), // change to ageScale with domain (0 or 10 to 90)
     sizeScale       : d3.scale.linear().domain([0,110]).range([0,1]),
     groupScale      : {},
 
-    rTumorSizeScale : d3.scale.pow().exponent(0.5).domain([0,3600]).range([1,90]), // 3600 is max tumor size -- consider linear scale?
-
 
     
     //data settings
-    // currentYearDataColumn   : 'budget_2013',
-    // previousYearDataColumn  : 'budget_2012',
-    // possibly change this to look up column headers in tsv file
     tumorWeightDataColumn   : 'N:SAMP:tumor_weight:::::',
     raceDataColumn          : 'C:CLIN:race:::::',
     countryDataColumn       : 'C:CLIN:country:::::', 
@@ -295,6 +283,10 @@ cancer.Chart = function(){
         } else {
           return that.pFormat(p)
         }       
+      }
+
+      this.titleFormat = function toTitleCase(str) {
+          return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
       }
       
       this.radiusScale = function(n){
@@ -325,35 +317,23 @@ cancer.Chart = function(){
       //it is probably overly complicated
       // [fill this in later]
 
-      this.totalValue = 0;
+      
       // Builds the nodes data array from the original data *and* calculates total value
+      this.totalValue = 0;
       for (var i=0; i < this.data.length; i++) {
         var n = this.data[i];
         var out = {
           sid: n[this.barcodeDataColumn],
           radius: this.radiusScale(n[this.tumorWeightDataColumn]),
-          group: n[this.countryDataColumn],
-          // change: n['change'],
+          group: n[this.countryDataColumn].replace(/_/g, ' '),
           ageCategory: this.categorizeAge(n[this.ageDataColumn]),
           value: n[this.tumorWeightDataColumn],
           name: n[this.histologicalColumn].replace(/_/g, ' '),
-          gender: n[this.genderDataColumn],
-          // isNegative: (n[this.currentYearDataColumn] < 0),
-          // positions: n.positions,
+          gender: that.titleFormat(n[this.genderDataColumn]),
           x:Math.random() * that.width,
           y:Math.random() * that.height
         }
-        // if (n.positions.total) {
-        //   out.x = n.positions.total.x + (n.positions.total.x - (that.width / 2)) * 0.5; // 'that' is the chart
-        //   out.y = n.positions.total.y + (n.positions.total.y - (150)) * 0.5;
-        // };
-        // if ((n[this.currentYearDataColumn] > 0)!==(n[this.previousYearDataColumn] > 0)) {
-        //   out.change = "N.A.";
-        //   out.changeCategory = 0;
-        // };
         this.nodes.push(out);
-
-        // new addition
         this.totalValue += parseFloat(n[this.tumorWeightDataColumn]);
       };
 
@@ -374,45 +354,39 @@ cancer.Chart = function(){
       //   }
       // };
 
+      // to do : change changeScale to domain similar to 10-90 years
       this.svg = d3.select("#cancer-chartCanvas").append("svg:svg")
         .attr("width", this.width);
       
-        for (var i=0; i < this.changeTickValues.length; i++) {
-          d3.select("#cancer-discretionaryOverlay").append("div")
-            .html("<p>"+this.tickChangeFormat(this.changeTickValues[i])+"</p>")
-            .style("top", this.changeScale(this.changeTickValues[i])+'px')
-            .classed('cancer-discretionaryTick', true)
-            .classed('cancer-discretionaryZeroTick', (this.changeTickValues[i] === 0) )
+        for (var i=0; i < this.ageTickValues.length; i++) {
+          d3.select("#cancer-ageOverlay").append("div")
+            .html("<p>"+this.ageTickValues[i]+"</p>")
+            .style("top", this.changeScale(this.ageTickValues[i])+'px')
+            .classed('cancer-ageTick', true)
+            .classed('cancer-ageZeroTick', (this.ageTickValues[i] === 0) )
         };
-        d3.select("#cancer-discretionaryOverlay").append("div")
+        d3.select("#cancer-ageOverlay").append("div")
           .html("<p></p>")
           .style("top", this.changeScale(0)+'px')
-          .classed('cancer-discretionaryTick', true)
-          .classed('cancer-discretionaryZeroTick', true)
-        d3.select("#cancer-discretionaryOverlay").append("div")
+          .classed('cancer-ageTick', true)
+          .classed('cancer-ageZeroTick', true)
+        d3.select("#cancer-ageOverlay").append("div")
           .html("<p>+26% or higher</p>")
           .style("top", this.changeScale(100)+'px')
-          .classed('cancer-discretionaryTickLabel', true)
-        d3.select("#cancer-discretionaryOverlay").append("div")
+          .classed('cancer-ageTickLabel', true)
+        d3.select("#cancer-ageOverlay").append("div")
           .html("<p>&minus;26% or lower</p>")
           .style("top", this.changeScale(-100)+'px')
-          .classed('cancer-discretionaryTickLabel', true)
-
-      // // deficit circle 
-      // d3.select("#cancer-deficitCircle").append("circle")
-      //   .attr('r', this.radiusScale(1000))
-      //   .attr('class',"cancer-deficitCircle")
-      //   .attr('cx', 125)
-      //   .attr('cy', 125);
+          .classed('cancer-ageTickLabel', true)
         
-      // -- all this redundant?
+      // to do: dynamically calculate cy attributes based on radiusScale and/or totalValue
       d3.select("#cancer-scaleKey").append("circle")
         .attr('r', this.radiusScale(1000))
         .attr('class',"cancer-scaleKeyCircle")
         .attr('cx', 30)
         .attr('cy', 30);
       d3.select("#cancer-scaleKey").append("circle")
-        .attr('r', this.radiusScale(500))
+        .attr('r', this.radiusScale(100))
         .attr('class',"cancer-scaleKeyCircle")
         .attr('cx', 30)
         .attr('cy', 50);
@@ -422,8 +396,8 @@ cancer.Chart = function(){
         .attr('cx', 30)
         .attr('cy', 55);
 
-      // department will change to country
-      var departmentOverlay = $j("#cancer-departmentOverlay")
+      
+      var countryOverlay = $j("#cancer-countryOverlay")
       
       for (var i=0; i < country_category_data.length; i++) {
         // var cat = cancer.country_category_data[i]['label']
@@ -433,14 +407,14 @@ cancer.Chart = function(){
         // var catYOffset = this.categoryPositionLookup[cat].offsetY;
         // var catNode;
         // if (cat === "Other") {
-        //   catNode = $j("<div class='cancer-departmentAnnotation cancer-row"+cancer.country_category_data[i]['row']+"'><p class='department'>"+cat+"</p></div>")
+        //   catNode = $j("<div class='cancer-countryAnnotation cancer-row"+cancer.country_category_data[i]['row']+"'><p class='country'>"+cat+"</p></div>")
           
         // } else {
-        //   catNode = $j("<div class='cancer-departmentAnnotation cancer-row"+country_cancer.category_data[i]['row']+"'><p class='total'>$"+catTot+"</p><p class='department'>"+catLabel+"</p></div>")
+        //   catNode = $j("<div class='cancer-countryAnnotation cancer-row"+country_cancer.category_data[i]['row']+"'><p class='total'>$"+catTot+"</p><p class='country'>"+catLabel+"</p></div>")
           
         // }
         //   catNode.css({'left':this.categoryPositionLookup[cat].x-catWidth/2,'top': this.categoryPositionLookup[cat].y - catYOffset, 'width':catWidth})
-        // departmentOverlay.append(catNode)
+        // countryOverlay.append(catNode)
       
       };
 
@@ -456,19 +430,16 @@ cancer.Chart = function(){
         .style("stroke", function(d){ return that.getStrokeColor(d); })
         .on("mouseover",function(d,i) { 
           var el = d3.select(this)
-          // var xpos = Number(el.attr('cx'))
-          console.log('cx is ' + el.attr('cx'));
-          // var ypos = (el.attr('cy') - d.radius - 10)
+          var xpos = Number(el.attr('cx'))
+          var ypos = (el.attr('cy') - d.radius - 10)
           el.style("stroke","#000").style("stroke-width",3);
-          // d3.select("#cancer-tooltip").style('top',ypos+"px").style('left',xpos+"px").style('display','block')
+          d3.select("#cancer-tooltip").style('top',ypos+"px").style('left',xpos+"px").style('display','block');
           //   .classed('cancer-plus', (d.changeCategory > 0))
           //   .classed('cancer-minus', (d.changeCategory < 0));
-          // d3.select("#cancer-tooltip .cancer-name").html(that.nameFormat(d.name))
-
-          // // change from d.discretion to d.ageCategory
-          // d3.select("#cancer-tooltip .cancer-discretion").text(that.discretionFormat(d.ageCategory))
-          // d3.select("#cancer-tooltip .cancer-department").text(d.group)
-          // d3.select("#cancer-tooltip .cancer-value").html("$"+that.bigFormat(d.value))
+          d3.select("#cancer-tooltip .cancer-name").html(d.name);
+          d3.select("#cancer-tooltip .cancer-gender").html(d.gender);
+          d3.select("#cancer-tooltip .cancer-country").text(d.group);
+          d3.select("#cancer-tooltip .cancer-value").html(d.value+" g");
           
           // var pctchngout = that.pctFormat(d.change)
           // if (d.change == "N.A.") {
@@ -480,7 +451,7 @@ cancer.Chart = function(){
           d3.select(this)
           .style("stroke-width",1)
           .style("stroke", function(d){ return that.getStrokeColor(d); })
-          // d3.select("#cancer-tooltip").style('display','none')
+          d3.select("#cancer-tooltip").style('display','none')
         });
       
             
@@ -509,17 +480,21 @@ cancer.Chart = function(){
             .each(that.totalSort(e.alpha))
             .each(that.buoyancy(e.alpha))
             .attr("cx", function(d) { 
-              console.log('in totalLayout d.x is ' + d.x);
+              // console.log('in totalLayout d.x is ' + d.x);
               return d.x; 
             })
             .attr("cy", function(d) { 
-              console.log('in totalLayout d.y is ' + d.y);
+              // console.log('in totalLayout d.y is ' + d.y);
               return d.y; 
             });
         })
-        .start();
-      
+        .start();   
     },
+
+    genderLayout: function(){},
+    ageLayout: function(){},
+    countryLayout: function(){},
+
 
     // ----------------------------------------------------------------------------------------
     // FORCES
@@ -536,9 +511,9 @@ cancer.Chart = function(){
         var targetX = that.width / 2;
              
         d.y = d.y + (targetY - d.y) * (that.defaultGravity + 0.02) * alpha;
-        console.log('in totalSort d.y is ' + d.y);
+        // console.log('in totalSort d.y is ' + d.y);
         d.x = d.x + (targetX - d.x) * (that.defaultGravity + 0.02) * alpha;
-        console.log('in totalSort d.x is ' + d.x);
+        // console.log('in totalSort d.x is ' + d.x);
       };
     },
 
@@ -550,12 +525,11 @@ cancer.Chart = function(){
       return function(d){              
           var targetY = that.centerY - (d.ageCategory) * that.boundingRadius;
           d.y = d.y + (targetY - d.y) * (that.defaultGravity) * alpha * alpha * alpha * 100;
-          console.log('in buoyancy d.y is ' + d.y);                    
+          // console.log('in buoyancy d.y is ' + d.y);                    
       };
     }
 
   } // end return
-  console.log('at end of returned Chart object');
 } // end Chart object
 
 
