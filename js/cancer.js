@@ -277,7 +277,7 @@ cancer.Chart = function(){
     ageDataColumn           : 'N:CLIN:age_at_initial_pathologic_diagnosis:::::',
     barcodeDataColumn       : 'M:CLIN+SAMP+GNAB',
     histologicalColumn      : 'C:CLIN:histological_type:::::',
-    data                    : cancer.mutation_array_data.filter(function(e){return e['M:CLIN+SAMP+GNAB'] === 'TCGA-CF-A1HS-01'}),//{ return e['C:CLIN:disease_code:::::'] === 'BLCA'}), // custom filter later
+    data                    : cancer.mutation_array_data.filter(function(e){ return e['C:CLIN:disease_code:::::'] === 'BLCA'}), // custom filter later {return e['M:CLIN+SAMP+GNAB'] === 'TCGA-CF-A1HS-01'}),//
     categoryPositionLookup  : {},
     categoriesList          : [],
     
@@ -406,21 +406,21 @@ cancer.Chart = function(){
       //   .attr('cy', 125);
         
       // -- all this redundant?
-      // d3.select("#nytg-scaleKey").append("circle")
-      //   .attr('r', this.radiusScale(100000000))
-      //   .attr('class',"nytg-scaleKeyCircle")
-      //   .attr('cx', 30)
-      //   .attr('cy', 30);
-      // d3.select("#nytg-scaleKey").append("circle")
-      //   .attr('r', this.radiusScale(10000000))
-      //   .attr('class',"nytg-scaleKeyCircle")
-      //   .attr('cx', 30)
-      //   .attr('cy', 50);
-      // d3.select("#nytg-scaleKey").append("circle")
-      //   .attr('r', this.radiusScale(1000000))
-      //   .attr('class',"nytg-scaleKeyCircle")
-      //   .attr('cx', 30)
-      //   .attr('cy', 55);
+      d3.select("#cancer-scaleKey").append("circle")
+        .attr('r', this.radiusScale(1000))
+        .attr('class',"cancer-scaleKeyCircle")
+        .attr('cx', 30)
+        .attr('cy', 30);
+      d3.select("#cancer-scaleKey").append("circle")
+        .attr('r', this.radiusScale(500))
+        .attr('class',"cancer-scaleKeyCircle")
+        .attr('cx', 30)
+        .attr('cy', 50);
+      d3.select("#cancer-scaleKey").append("circle")
+        .attr('r', this.radiusScale(10))
+        .attr('class',"cancer-scaleKeyCircle")
+        .attr('cx', 30)
+        .attr('cy', 55);
 
       // department will change to country
       var departmentOverlay = $j("#cancer-departmentOverlay")
@@ -548,7 +548,7 @@ cancer.Chart = function(){
     buoyancy: function(alpha) {
       var that = this;
       return function(d){              
-          var targetY = that.centerY - (d.ageCategory / 3) * that.boundingRadius;
+          var targetY = that.centerY - (d.ageCategory) * that.boundingRadius;
           d.y = d.y + (targetY - d.y) * (that.defaultGravity) * alpha * alpha * alpha * 100;
           console.log('in buoyancy d.y is ' + d.y);                    
       };
