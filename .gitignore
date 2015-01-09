@@ -1,4 +1,4 @@
-.tsv
-.xls
-.xlsx
+.*tsv
+*.xls
+*.xlsx
 .DS_Store
