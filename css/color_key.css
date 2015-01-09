@@ -1,0 +1,48 @@
+/********************************
+ ** FILE: color_key.css
+ ********************************/
+
+.change-decrease3 {
+  background-color: #d84b2a;
+}
+.change-decrease2 {
+  background-color: #ee9586;
+}
+.change-decrease1{
+  background-color: #e4b7b2;
+}
+.change-same {
+  background-color: #CCC;
+}
+.change-increase1 {
+  background-color: #beccae;
+}
+.change-increase2 {
+  background-color: #9caf84;
+}
+.change-increase3 {
+  background-color: #7aa25c;
+}
+
+/*text color for changes*/
+.change-decrease3 span.label {
+    color: #eeb0a2;
+}
+.change-decrease2 span.label {
+    color: #f8d0ca;
+}
+.change-decrease1 span.label {
+    color: #f3dfdd;
+}
+.change-same span.label {
+    color: #FFFFFF;
+}
+.change-increase1 span.label {
+    color: #e2e8db;
+}
+.change-increase2 span.label {
+    color: #d3dbc9;
+}
+.change-increase3 span.label {
+    color: #c5d6b7;
+}
