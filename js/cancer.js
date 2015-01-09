@@ -258,7 +258,7 @@ cancer.Chart = function(){
     
     rScale          : d3.scale.pow().exponent(0.5).domain([0,3600]).range([1,90]),
     radiusScale     : null,
-    changeScale     : d3.scale.linear().domain([-0.28,0.28]).range([620,180]).clamp(true),
+    changeScale     : d3.scale.linear().domain([-0.28,0.28]).range([620,180]).clamp(true), // change to ageScale with domain (0 or 10 to 90)
     sizeScale       : d3.scale.linear().domain([0,110]).range([0,1]),
     groupScale      : {},
 
@@ -310,10 +310,12 @@ cancer.Chart = function(){
       this.getFillColor = function(d){
         return that.fillColorAge(d.ageCategory);
       };
-      
-      this.boundingRadius = this.radiusScale(this.totalValue);
-      this.centerX = this.width / 2;
-      this.centerY = 300;
+
+      // moved these 3 below the for loop
+      // this.boundingRadius = this.radiusScale(this.totalValue);
+      // this.centerX = this.width / 2;
+      // this.centerY = 300;
+
       
       // category_data.sort(function(a, b){  // category_data
       //   return b['total'] - a['total'];  
@@ -323,7 +325,8 @@ cancer.Chart = function(){
       //it is probably overly complicated
       // [fill this in later]
 
-      // Builds the nodes data array from the original data
+      this.totalValue = 0;
+      // Builds the nodes data array from the original data *and* calculates total value
       for (var i=0; i < this.data.length; i++) {
         var n = this.data[i];
         var out = {
@@ -348,8 +351,15 @@ cancer.Chart = function(){
         //   out.change = "N.A.";
         //   out.changeCategory = 0;
         // };
-        this.nodes.push(out)
+        this.nodes.push(out);
+
+        // new addition
+        this.totalValue += parseFloat(n[this.tumorWeightDataColumn]);
       };
+
+      this.boundingRadius = this.radiusScale(this.totalValue);
+      this.centerX = this.width / 2;
+      this.centerY = 300;
       
       // sorts by tumor weight -- not used
       // this.nodes.sort(function(a, b){  
@@ -445,10 +455,11 @@ cancer.Chart = function(){
         .attr('id',function(d){ return 'cancer-circle'+d.sid })
         .style("stroke", function(d){ return that.getStrokeColor(d); })
         .on("mouseover",function(d,i) { 
-          // var el = d3.select(this)
+          var el = d3.select(this)
           // var xpos = Number(el.attr('cx'))
+          console.log('cx is ' + el.attr('cx'));
           // var ypos = (el.attr('cy') - d.radius - 10)
-          // el.style("stroke","#000").style("stroke-width",3);
+          el.style("stroke","#000").style("stroke-width",3);
           // d3.select("#cancer-tooltip").style('top',ypos+"px").style('left',xpos+"px").style('display','block')
           //   .classed('cancer-plus', (d.changeCategory > 0))
           //   .classed('cancer-minus', (d.changeCategory < 0));
@@ -466,9 +477,9 @@ cancer.Chart = function(){
           // d3.select("#cancer-tooltip .cancer-change").html(pctchngout) 
         })
         .on("mouseout",function(d,i) { 
-          // d3.select(this)
-          // .style("stroke-width",1)
-          // .style("stroke", function(d){ return that.getStrokeColor(d); })
+          d3.select(this)
+          .style("stroke-width",1)
+          .style("stroke", function(d){ return that.getStrokeColor(d); })
           // d3.select("#cancer-tooltip").style('display','none')
         });
       
@@ -495,14 +506,14 @@ cancer.Chart = function(){
         .friction(0.9)
         .on("tick", function(e){
           that.circle
-          //   .each(that.totalSort(e.alpha))
-          //   .each(that.buoyancy(e.alpha))
+            .each(that.totalSort(e.alpha))
+            .each(that.buoyancy(e.alpha))
             .attr("cx", function(d) { 
-              // console.log('d.x is ' + d.x);
+              console.log('in totalLayout d.x is ' + d.x);
               return d.x; 
             })
             .attr("cy", function(d) { 
-              // console.log('d.y is ' + d.y);
+              console.log('in totalLayout d.y is ' + d.y);
               return d.y; 
             });
         })
@@ -524,9 +535,10 @@ cancer.Chart = function(){
         var targetY = that.centerY;
         var targetX = that.width / 2;
              
-        d.y = d.y + (targetY - d.y) * (that.defaultGravity + 0.02) * alpha
-        d.x = d.x + (targetX - d.x) * (that.defaultGravity + 0.02) * alpha
-        
+        d.y = d.y + (targetY - d.y) * (that.defaultGravity + 0.02) * alpha;
+        console.log('in totalSort d.y is ' + d.y);
+        d.x = d.x + (targetX - d.x) * (that.defaultGravity + 0.02) * alpha;
+        console.log('in totalSort d.x is ' + d.x);
       };
     },
 
@@ -536,8 +548,9 @@ cancer.Chart = function(){
     buoyancy: function(alpha) {
       var that = this;
       return function(d){              
-          var targetY = that.centerY - (d.changeCategory / 3) * that.boundingRadius
-          d.y = d.y + (targetY - d.y) * (that.defaultGravity) * alpha * alpha * alpha * 100                         
+          var targetY = that.centerY - (d.ageCategory / 3) * that.boundingRadius;
+          d.y = d.y + (targetY - d.y) * (that.defaultGravity) * alpha * alpha * alpha * 100;
+          console.log('in buoyancy d.y is ' + d.y);                    
       };
     }
 
