@@ -193,7 +193,6 @@ cancer.Chart = function(){
     maxRadius       : null,
     centerX         : null,
     centerY         : null,
-    scatterPlotY    : null,
         
     //d3 settings
     defaultGravity  : 0.1,
@@ -251,7 +250,7 @@ cancer.Chart = function(){
   
     rScale          : d3.scale.pow().exponent(0.5).domain([0,3600]).range([1,50]), // calculate range max from total value
     radiusScale     : null,
-    changeScale     : d3.scale.linear().domain([-0.28,0.28]).range([620,180]).clamp(true), // change to ageScale with domain (0 or 10 to 90)
+    ageScale        : d3.scale.linear().domain([0,90]).range([620,180]), //.clamp(true), 
     sizeScale       : d3.scale.linear().domain([0,110]).range([0,1]),
     groupScale      : {},
 
@@ -274,8 +273,6 @@ cancer.Chart = function(){
     // 
     init: function() {
       var that = this;
-      
-      this.scatterPlotY = this.changeScale(0);
       
       this.pctFormat = function(p){
         if (p === Infinity ||p === -Infinity) {
@@ -320,12 +317,11 @@ cancer.Chart = function(){
       //   return b['total'] - a['total'];  
       // });
 
-      //calculates positions of the country category clumps
-      //it is probably overly complicated
-      // [fill this in later]
+
+
 
       
-      // Builds the nodes data array from the original data *and* calculates total value
+      // Builds the nodes data array from the original data *and* calculates total value *and* makes categoriesList
       // to do: make 'NA' values null
       this.totalValue = 0;
       for (var i=0; i < this.data.length; i++) {
@@ -333,7 +329,7 @@ cancer.Chart = function(){
         var out = {
           sid: n[this.barcodeDataColumn],
           radius: this.radiusScale(n[this.tumorWeightDataColumn]),
-          group: n[this.countryDataColumn].replace(/_/g, ' '),
+          group: (n[this.countryDataColumn] != 'NA') ? this.titleFormat(n[this.countryDataColumn].replace(/_/g, ' ')) : null,
           age: (n[this.ageDataColumn] != 'NA') ? n[this.ageDataColumn] : null,
           ageCategory: this.categorizeAge(n[this.ageDataColumn]),
           value: n[this.tumorWeightDataColumn],
@@ -344,12 +340,30 @@ cancer.Chart = function(){
           y:Math.random() * this.height
         }
         this.nodes.push(out);
+        if (this.categoriesList.indexOf(out.group) < 0) {
+          this.categoriesList.push(out.group);
+          console.log(out.group);
+        }
         this.totalValue += parseFloat(n[this.tumorWeightDataColumn]);
       };
 
+      this.categoriesList.sort();
       this.boundingRadius = this.radiusScale(this.totalValue);
       this.centerX = this.width / 2;
       this.centerY = 300;
+
+      //calculates positions of the country category clumps
+      //it is probably overly complicated
+      // [fill this in later]
+      var columns = [4, 7, 9, 9]
+      rowPadding = [150, 100, 90, 80, 70],
+      rowPosition = [220, 450, 600, 720, 817],
+      rowOffsets = [130, 80, 60, 45, 48]
+      currentX = 0,
+      currentY = 0;
+
+
+      this.groupScale = d3.scale.ordinal().domain(this.categoriesList).rangePoints([0,1]);
       
       // sorts by tumor weight -- not used
       // this.nodes.sort(function(a, b){  
@@ -364,30 +378,16 @@ cancer.Chart = function(){
       //   }
       // };
 
-      // to do : change changeScale to domain similar to 10-90 years
+      // age graph
       this.svg = d3.select("#cancer-chartCanvas").append("svg:svg")
         .attr("width", this.width);
       
         for (var i=0; i < this.ageTickValues.length; i++) {
           d3.select("#cancer-ageOverlay").append("div")
             .html("<p>"+this.ageTickValues[i]+"</p>")
-            .style("top", this.changeScale(this.ageTickValues[i])+'px')
+            .style("top", this.ageScale(this.ageTickValues[i])+'px')
             .classed('cancer-ageTick', true)
-            .classed('cancer-ageZeroTick', (this.ageTickValues[i] === 0) )
         };
-        d3.select("#cancer-ageOverlay").append("div")
-          .html("<p></p>")
-          .style("top", this.changeScale(0)+'px')
-          .classed('cancer-ageTick', true)
-          .classed('cancer-ageZeroTick', true)
-        d3.select("#cancer-ageOverlay").append("div")
-          .html("<p>+26% or higher</p>")
-          .style("top", this.changeScale(100)+'px')
-          .classed('cancer-ageTickLabel', true)
-        d3.select("#cancer-ageOverlay").append("div")
-          .html("<p>&minus;26% or lower</p>")
-          .style("top", this.changeScale(-100)+'px')
-          .classed('cancer-ageTickLabel', true)
         
       // to do: dynamically calculate cy attributes based on radiusScale and/or totalValue
       d3.select("#cancer-scaleKey").append("circle")
@@ -518,7 +518,20 @@ cancer.Chart = function(){
         })
         .start();
     },
-    ageLayout: function(){},
+    ageLayout: function(){
+      var that = this;
+      this.force
+        .gravity(0)
+        .charge(0)
+        .friction(0.2)
+        .on("tick", function(e){
+          that.circle
+            .each(that.ageSort(e.alpha))
+            .attr("cx", function(d) { return d.x; })
+            .attr("cy", function(d) { return d.y; });
+        })
+        .start();
+    },
     countryLayout: function(){},
 
 
@@ -559,30 +572,44 @@ cancer.Chart = function(){
       var that = this;
       return function(d){
         var targetY = that.centerY;
-        var targetX = 0;
-        
-        // if (d.isNegative) {
-        //   if (d.changeCategory > 0) {
-        //     d.x = - 200
-        //   } else {
-        //     d.x =  1100
-        //   }
-        //   return;
-        // }
-        
+        var targetX = 0;     
         
         if (d.gender === 'Female') {
           targetX = 600
         } else if (d.gender === 'Male') {
           targetX = 400
-        } else {
-          targetX = 900
+        } else { // samples without gender data go off screen -- can change this
+          targetX = -300 + Math.random()* 100;
         };
-     
-        
         
         d.y = d.y + (targetY - d.y) * (that.defaultGravity) * alpha * 1.1
         d.x = d.x + (targetX - d.x) * (that.defaultGravity) * alpha * 1.1
+      };
+    },
+
+    // 
+    // 
+    // 
+    ageSort: function(alpha) {
+      var that = this;
+      return function(d){
+        var targetY = that.height / 2;
+        var targetX = 0;
+       
+        if (d.age) {
+          targetY = that.ageScale(d.age);
+          targetX = 100 + that.groupScale(d.group)*(that.width - 120);
+          if (isNaN(targetY)) {targetY = that.centerY}; // for samples without age data
+          if (targetY > (that.height-80)) {targetY = that.height-80}; //?
+          if (targetY < 80) {targetY = 80};
+          
+        } else { // samples without age data go offscreen -- can change this
+          targetX = -300 + Math.random()* 100;
+          targetY = d.y;
+        };
+        
+        d.y = d.y + (targetY - d.y) * Math.sin(Math.PI * (1 - alpha*10)) * 0.2
+        d.x = d.x + (targetX - d.x) * Math.sin(Math.PI * (1 - alpha*10)) * 0.1
       };
     },
 
