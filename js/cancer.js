@@ -235,8 +235,8 @@ cancer.Chart = function(){
                         } else if ( c <= 80){ return 7;
                         } else { return 8; }
                       },
-    fillColorAge    : d3.scale.ordinal().domain([8,7,6,5,4,3,2,1]).range(["#19022a", "#43013a", "#5f0046", "#9e002f", "#ce1129", "#f6441a", "#f68617", "#ffa61e"]),
-    strokeColorAge  : d3.scale.ordinal().domain([8,7,6,5,4,3,2,1]).range(["#4F3D5C", "#52394E", "#470235", "#780024", "#961223", "#BD3515", "#C46C14", "#D48A19"]),
+    fillColorAge    : d3.scale.ordinal().domain([8,7,6,5,4,3,2,1,0]).range(["#19022a", "#43013a", "#5f0046", "#9e002f", "#ce1129", "#f6441a", "#f68617", "#ffa61e", "#969696"]),
+    strokeColorAge  : d3.scale.ordinal().domain([8,7,6,5,4,3,2,1,0]).range(["#4F3D5C", "#52394E", "#470235", "#780024", "#961223", "#BD3515", "#C46C14", "#D48A19", "#5E5E5E"]),
     
     getFillColor    : null,
     getStrokeColor  : null,
@@ -302,6 +302,13 @@ cancer.Chart = function(){
       this.getFillColor = function(d){
         return that.fillColorAge(d.ageCategory);
       };
+      this.getMouseOverText = function(d){
+        var clinical_data = d.gender || '';
+        clinical_data += d.race ? (clinical_data === '' ? '': ', ') + d.race : '';
+        clinical_data += d.age ? (clinical_data === '' ? '': ', ') + d.age + ' years old at first diagnosis' : '';
+        return clinical_data;
+
+      }
 
       // moved these 3 below the for loop
       // this.boundingRadius = this.radiusScale(this.totalValue);
@@ -319,6 +326,7 @@ cancer.Chart = function(){
 
       
       // Builds the nodes data array from the original data *and* calculates total value
+      // to do: make 'NA' values null
       this.totalValue = 0;
       for (var i=0; i < this.data.length; i++) {
         var n = this.data[i];
@@ -326,12 +334,14 @@ cancer.Chart = function(){
           sid: n[this.barcodeDataColumn],
           radius: this.radiusScale(n[this.tumorWeightDataColumn]),
           group: n[this.countryDataColumn].replace(/_/g, ' '),
+          age: (n[this.ageDataColumn] != 'NA') ? n[this.ageDataColumn] : null,
           ageCategory: this.categorizeAge(n[this.ageDataColumn]),
           value: n[this.tumorWeightDataColumn],
           name: n[this.histologicalColumn].replace(/_/g, ' '),
-          gender: that.titleFormat(n[this.genderDataColumn]),
-          x:Math.random() * that.width,
-          y:Math.random() * that.height
+          gender: (n[this.genderDataColumn] != 'NA') ? this.titleFormat(n[this.genderDataColumn]) : null,
+          race: (n[this.raceDataColumn] != "NA") ? this.titleFormat(n[this.raceDataColumn].replace(/_/g, ' ')) : null,
+          x:Math.random() * this.width,
+          y:Math.random() * this.height
         }
         this.nodes.push(out);
         this.totalValue += parseFloat(n[this.tumorWeightDataColumn]);
@@ -418,6 +428,8 @@ cancer.Chart = function(){
       
       };
 
+
+
       // This is the every circle
       this.circle = this.svg.selectAll("circle")
           .data(this.nodes, function(d) { return d.sid; });
@@ -437,7 +449,7 @@ cancer.Chart = function(){
           //   .classed('cancer-plus', (d.changeCategory > 0))
           //   .classed('cancer-minus', (d.changeCategory < 0));
           d3.select("#cancer-tooltip .cancer-name").html(d.name);
-          d3.select("#cancer-tooltip .cancer-gender").html(d.gender);
+          d3.select("#cancer-tooltip .cancer-gender").html(that.getMouseOverText(d));
           d3.select("#cancer-tooltip .cancer-country").text(d.group);
           d3.select("#cancer-tooltip .cancer-value").html(d.value+" g");
           
@@ -491,7 +503,21 @@ cancer.Chart = function(){
         .start();   
     },
 
-    genderLayout: function(){},
+    genderLayout: function(){
+      var that = this;
+      this.force
+        .gravity(0)
+        .friction(0.9)
+        .charge(that.defaultCharge)
+        .on("tick", function(e){
+          that.circle
+            .each(that.genderSort(e.alpha))
+            .each(that.buoyancy(e.alpha))
+            .attr("cx", function(d) { return d.x; })
+            .attr("cy", function(d) { return d.y; });
+        })
+        .start();
+    },
     ageLayout: function(){},
     countryLayout: function(){},
 
@@ -511,9 +537,7 @@ cancer.Chart = function(){
         var targetX = that.width / 2;
              
         d.y = d.y + (targetY - d.y) * (that.defaultGravity + 0.02) * alpha;
-        // console.log('in totalSort d.y is ' + d.y);
         d.x = d.x + (targetX - d.x) * (that.defaultGravity + 0.02) * alpha;
-        // console.log('in totalSort d.x is ' + d.x);
       };
     },
 
@@ -525,9 +549,42 @@ cancer.Chart = function(){
       return function(d){              
           var targetY = that.centerY - (d.ageCategory) * that.boundingRadius;
           d.y = d.y + (targetY - d.y) * (that.defaultGravity) * alpha * alpha * alpha * 100;
-          // console.log('in buoyancy d.y is ' + d.y);                    
       };
-    }
+    },
+
+    // 
+    // 
+    // 
+    genderSort: function(alpha) {
+      var that = this;
+      return function(d){
+        var targetY = that.centerY;
+        var targetX = 0;
+        
+        // if (d.isNegative) {
+        //   if (d.changeCategory > 0) {
+        //     d.x = - 200
+        //   } else {
+        //     d.x =  1100
+        //   }
+        //   return;
+        // }
+        
+        
+        if (d.gender === 'Female') {
+          targetX = 600
+        } else if (d.gender === 'Male') {
+          targetX = 400
+        } else {
+          targetX = 900
+        };
+     
+        
+        
+        d.y = d.y + (targetY - d.y) * (that.defaultGravity) * alpha * 1.1
+        d.x = d.x + (targetX - d.x) * (that.defaultGravity) * alpha * 1.1
+      };
+    },
 
   } // end return
 } // end Chart object
