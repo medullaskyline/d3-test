@@ -264,7 +264,7 @@ cancer.Chart = function(){
     ageDataColumn           : 'N:CLIN:age_at_initial_pathologic_diagnosis:::::',
     barcodeDataColumn       : 'M:CLIN+SAMP+GNAB',
     histologicalColumn      : 'C:CLIN:histological_type:::::',
-    data                    : cancer.mutation_array_data.filter(function(e){ return e['C:CLIN:disease_code:::::'] === 'LGG'}), // custom filter later {return e['M:CLIN+SAMP+GNAB'] === 'TCGA-CF-A1HS-01'}),//
+    data                    : cancer.mutation_array_data.filter(function(e){ return e['C:CLIN:disease_code:::::'] === 'BLCA'}), // custom filter later {return e['M:CLIN+SAMP+GNAB'] === 'TCGA-CF-A1HS-01'}),//
     categoryPositionLookup  : {},
     categoriesList          : [],
     
