@@ -250,7 +250,7 @@ cancer.Chart = function(){
   
     rScale          : d3.scale.pow().exponent(0.5).domain([0,3600]).range([1,50]), // calculate range max from total value
     radiusScale     : null,
-    ageScale        : d3.scale.linear().domain([0,90]).range([620,180]), //.clamp(true), 
+    ageScale        : d3.scale.linear().domain([0,90]).range([850,180]), //.clamp(true), 
     sizeScale       : d3.scale.linear().domain([0,110]).range([0,1]),
     groupScale      : {},
 
@@ -264,7 +264,7 @@ cancer.Chart = function(){
     ageDataColumn           : 'N:CLIN:age_at_initial_pathologic_diagnosis:::::',
     barcodeDataColumn       : 'M:CLIN+SAMP+GNAB',
     histologicalColumn      : 'C:CLIN:histological_type:::::',
-    data                    : cancer.mutation_array_data.filter(function(e){ return e['C:CLIN:disease_code:::::'] === 'BLCA'}), // custom filter later {return e['M:CLIN+SAMP+GNAB'] === 'TCGA-CF-A1HS-01'}),//
+    data                    : cancer.mutation_array_data.filter(function(e){ return e['C:CLIN:disease_code:::::'] === 'LGG'}), // custom filter later {return e['M:CLIN+SAMP+GNAB'] === 'TCGA-CF-A1HS-01'}),//
     categoryPositionLookup  : {},
     categoriesList          : [],
     
@@ -332,8 +332,8 @@ cancer.Chart = function(){
           group: (n[this.countryDataColumn] != 'NA') ? this.titleFormat(n[this.countryDataColumn].replace(/_/g, ' ')) : null,
           age: (n[this.ageDataColumn] != 'NA') ? n[this.ageDataColumn] : null,
           ageCategory: this.categorizeAge(n[this.ageDataColumn]),
-          value: n[this.tumorWeightDataColumn],
-          name: n[this.histologicalColumn].replace(/_/g, ' '),
+          value: (n[this.tumorWeightDataColumn] != 'NA') ? n[this.tumorWeightDataColumn] : null,
+          name: (n[this.ageDataColumn] != 'NA') ? n[this.histologicalColumn].replace(/_/g, ' ') : 'None specified',
           gender: (n[this.genderDataColumn] != 'NA') ? this.titleFormat(n[this.genderDataColumn]) : null,
           race: (n[this.raceDataColumn] != "NA") ? this.titleFormat(n[this.raceDataColumn].replace(/_/g, ' ')) : null,
           x:Math.random() * this.width,
@@ -446,12 +446,10 @@ cancer.Chart = function(){
           var ypos = (el.attr('cy') - d.radius - 10)
           el.style("stroke","#000").style("stroke-width",3);
           d3.select("#cancer-tooltip").style('top',ypos+"px").style('left',xpos+"px").style('display','block');
-          //   .classed('cancer-plus', (d.changeCategory > 0))
-          //   .classed('cancer-minus', (d.changeCategory < 0));
-          d3.select("#cancer-tooltip .cancer-name").html(d.name);
+          d3.select("#cancer-tooltip .cancer-name").text(d.group); // used to be html(d.name);
           d3.select("#cancer-tooltip .cancer-gender").html(that.getMouseOverText(d));
-          d3.select("#cancer-tooltip .cancer-country").text(d.group);
-          d3.select("#cancer-tooltip .cancer-value").html(d.value+" g");
+          d3.select("#cancer-tooltip .cancer-country").html(d.name); // used to be text(d.group);
+          d3.select("#cancer-tooltip .cancer-value").html(d.value ? d.value +" g" : 'No tumor weight data');
           
           // var pctchngout = that.pctFormat(d.change)
           // if (d.change == "N.A.") {

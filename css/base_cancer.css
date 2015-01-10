@@ -17,13 +17,15 @@ h1, h2, h3, h4, h5, h6 {
   color: #000;
 }
 
+
+
 /* Structure */
 .cancer {
   font-family: Arial;
 }
 #cancer-chartFrame{
   width: 970px;
-  height: 550px;
+  height: 850px;
   margin-left: 50px;
   -webkit-transition: height ease-in-out 1s;  
   -moz-transition: height ease-in-out 1s;    
