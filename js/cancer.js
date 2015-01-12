@@ -7,165 +7,6 @@ d3.tsv("../clinMut_10054_56_02.tsv")
     });
 
 
-race_category_data = 
-[
-  {
-    "label":"American Indian or Alaska Native",
-    "data_label": "AMERICAN_INDIAN_OR_ALASKA_NATIVE",
-    // "total":921605000, //
-    // "num_children":26, //
-    "short_label":"Native American" //
-  },
-  {
-    "label":"Asian",
-    "data_label": "ASIAN",
-    // "total":921605000, //
-    // "num_children":26, //
-    "short_label":"Asian" //
-  },
-  {
-    "label":"Black or African American",
-    "data_label": "BLACK_OR_AFRICAN_AMERICAN",
-    // "total":921605000, //
-    // "num_children":26, //
-    "short_label":"Black" //
-  },
-  {
-    "label":"Native Hawaiian or Other Pacific Islander",
-    "data_label": "NATIVE_HAWAIIAN_OR_OTHER_PACIFIC_ISLANDER",
-    // "total":921605000, //
-    // "num_children":26, //
-    "short_label":"Pacific Islander" //
-  },
-  {
-    "label":"White",
-    "data_label": "WHITE",
-    // "total":921605000, //
-    // "num_children":26, //
-    "short_label":"White" //
-  },
-  {
-    "label":"Unknown or Other",
-    "data_label": "NA",
-    // "total":921605000, //
-    // "num_children":26, //
-    "short_label":"Unknown or Other" //
-  },
-];
-
-country_category_data =
-[
-  {
-    "label": "United States",
-    "data_label": "United_States"
-  },
-  {
-    "label": "Unknown",
-    "data_label": "NA"
-  },
-  {
-    "label": "Russia",
-    "data_label": "Russia"
-  },
-  {
-    "label": "Vietnam",
-    "data_label": "Vietnam"
-  },
-  {
-    "label": "Ukraine",
-    "data_label": "Ukraine"
-  },
-  {
-    "label": "Germany",
-    "data_label": "Germany"
-  },
-  {
-    "label": "Poland",
-    "data_label": "Poland"
-  },
-  {
-    "label": "Australia",
-    "data_label": "Australia"
-  },
-  {
-    "label": "Canada",
-    "data_label": "Canada"
-  },
-  {
-    "label": "Brazil",
-    "data_label": "Brazil"
-  },
-  {
-    "label": "Czech Republic",
-    "data_label": "Czech_Republic"
-  },
-  {
-    "label": "South Korea",
-    "data_label": "Korea_South"
-  },
-  {
-    "label": "Romania",
-    "data_label": "Romania"
-  },
-  {
-    "label": "Nigeria",
-    "data_label": "Nigeria"
-  },
-  {
-    "label": "United Kingdom",
-    "data_label": "United_Kingdom"
-  },
-  {
-    "label": "Israel",
-    "data_label": "Israel"
-  },
-  {
-    "label": "France",
-    "data_label": "France"
-  },
-  {
-    "label": "Singapore",
-    "data_label": "Singapore"
-  },
-  {
-    "label": "Netherlands",
-    "data_label": "Netherlands"
-  },
-  {
-    "label": "Italy",
-    "data_label": "Italy"
-  },
-  {
-    "label": "Moldova",
-    "data_label": "Moldova"
-  },
-  {
-    "label": "Afghanistan",
-    "data_label": "Afghanistan"
-  },
-  {
-    "label": "Puerto Rico",
-    "data_label": "Puerto_Rico"
-  },
-  {
-    "label": "Pakistan",
-    "data_label": "Pakistan"
-  },
-  {
-    "label": "Spain",
-    "data_label": "Spain"
-  },
-  {
-    "label": "Yemen",
-    "data_label": "Yemen"
-  },
-  {
-    "label": "Switzerland",
-    "data_label": "Switzerland"
-  }
-];
-
-
 
 /********************************
  ** FILE: chart.js
@@ -181,12 +22,6 @@ cancer.Chart = function(){
     width           : 970,
     height          : 850,
     groupPadding    : 10,
-    // totalValue      : 3700000000, // this is calculated below, after data
-    // deficitValue    : 901000000,
-    // CONST
-    // MANDATORY       : "Mandatory",
-    // DISCRETIONARY   : "Discretionary",
-    // NET_INTEREST    : "Net interest",
     
     //will be calculated later
     boundingRadius  : null,
@@ -211,18 +46,7 @@ cancer.Chart = function(){
     circle          : {},
     gravity         : null,
     charge          : null,
-    // changeTickValues: [-0.25, -0.15, -0.05, 0.05, 0.15, 0.25], 
     ageTickValues: [20, 30, 40, 50, 60, 70, 80],
-    categorizeChange: function(c){ // formerly 2012-2013 , now age at diagnosis
-                        if (isNaN(c)) { return 0;
-                        } else if ( c < -0.25) { return -3;
-                        } else if ( c < -0.05){ return -2;
-                        } else if ( c < -0.001){ return -1;
-                        } else if ( c <= 0.001){ return 0;
-                        } else if ( c <= 0.05){ return 1;
-                        } else if ( c <= 0.25){ return 2;
-                        } else { return 3; }
-                      },
     categorizeAge: function(c){ // formerly 2012-2013 change, now age at diagnosis
                         if (isNaN(c)) { return 0;
                         } else if ( c <= 20) { return 1;
@@ -232,7 +56,8 @@ cancer.Chart = function(){
                         } else if ( c <= 60){ return 5;
                         } else if ( c <= 70){ return 6;
                         } else if ( c <= 80){ return 7;
-                        } else { return 8; }
+                        } else if ( c <= 90){ return 8;
+                        } else { return 0; } // any other cases
                       },
     fillColorAge    : d3.scale.ordinal().domain([8,7,6,5,4,3,2,1,0]).range(["#19022a", "#43013a", "#5f0046", "#9e002f", "#ce1129", "#f6441a", "#f68617", "#ffa61e", "#969696"]),
     strokeColorAge  : d3.scale.ordinal().domain([8,7,6,5,4,3,2,1,0]).range(["#4F3D5C", "#52394E", "#470235", "#780024", "#961223", "#BD3515", "#C46C14", "#D48A19", "#5E5E5E"]),
@@ -307,22 +132,9 @@ cancer.Chart = function(){
 
       }
 
-      // moved these 3 below the for loop
-      // this.boundingRadius = this.radiusScale(this.totalValue);
-      // this.centerX = this.width / 2;
-      // this.centerY = 300;
-
-      
-      // category_data.sort(function(a, b){  // category_data
-      //   return b['total'] - a['total'];  
-      // });
-
-
-
-
-      
-      // Builds the nodes data array from the original data *and* calculates total value *and* makes categoriesList
-      // to do: make 'NA' values null
+  
+      // Builds the nodes data array from the original data 
+      // and calculates total value and makes categoriesList
       this.totalValue = 0;
       for (var i=0; i < this.data.length; i++) {
         var n = this.data[i];
@@ -342,7 +154,6 @@ cancer.Chart = function(){
         this.nodes.push(out);
         if (this.categoriesList.indexOf(out.group) < 0) {
           this.categoriesList.push(out.group);
-          console.log(out.group);
         }
         this.totalValue += parseFloat(n[this.tumorWeightDataColumn]);
       };
@@ -355,28 +166,16 @@ cancer.Chart = function(){
       //calculates positions of the country category clumps
       //it is probably overly complicated
       // [fill this in later]
-      var columns = [4, 7, 9, 9]
-      rowPadding = [150, 100, 90, 80, 70],
-      rowPosition = [220, 450, 600, 720, 817],
-      rowOffsets = [130, 80, 60, 45, 48]
+      // var columns = [4, 7, 9, 9]
+      // rowPadding = [150, 100, 90, 80, 70],
+      // rowPosition = [220, 450, 600, 720, 817],
+      // rowOffsets = [130, 80, 60, 45, 48]
       currentX = 0,
       currentY = 0;
 
 
       this.groupScale = d3.scale.ordinal().domain(this.categoriesList).rangePoints([0,1]);
       
-      // sorts by tumor weight -- not used
-      // this.nodes.sort(function(a, b){  
-      //   return Math.abs(b.value) - Math.abs(a.value);  
-      // });
-      
-      // this initially was meant to distinguish net income from net spending
-      // possibly push nodes onto 8 arrays of age ranges
-      // for (var i=0; i < this.nodes.length; i++) {
-      //   if(!this.nodes[i].isNegative ){
-      //     this.positiveNodes.push(this.nodes[i])
-      //   }
-      // };
 
       // age graph
       this.svg = d3.select("#cancer-chartCanvas").append("svg:svg")
@@ -407,26 +206,9 @@ cancer.Chart = function(){
         .attr('cy', 55);
 
       
-      var countryOverlay = $j("#cancer-countryOverlay")
-      
-      for (var i=0; i < country_category_data.length; i++) {
-        // var cat = cancer.country_category_data[i]['label']
-        // // var catLabel = cancer.country_category_data[i]['short_label']
-        // // var catTot = this.bigFormat(cancer.country_category_data[i]['total'])
-        // var catWidth = this.categoryPositionLookup[cat].w
-        // var catYOffset = this.categoryPositionLookup[cat].offsetY;
-        // var catNode;
-        // if (cat === "Other") {
-        //   catNode = $j("<div class='cancer-countryAnnotation cancer-row"+cancer.country_category_data[i]['row']+"'><p class='country'>"+cat+"</p></div>")
-          
-        // } else {
-        //   catNode = $j("<div class='cancer-countryAnnotation cancer-row"+country_cancer.category_data[i]['row']+"'><p class='total'>$"+catTot+"</p><p class='country'>"+catLabel+"</p></div>")
-          
-        // }
-        //   catNode.css({'left':this.categoryPositionLookup[cat].x-catWidth/2,'top': this.categoryPositionLookup[cat].y - catYOffset, 'width':catWidth})
-        // countryOverlay.append(catNode)
-      
-      };
+      // var countryOverlay = $j("#cancer-countryOverlay")
+      // for (var i=0; i < country_category_data.length; i++) {   
+      // };
 
 
 
@@ -450,12 +232,6 @@ cancer.Chart = function(){
           d3.select("#cancer-tooltip .cancer-gender").html(that.getMouseOverText(d));
           d3.select("#cancer-tooltip .cancer-country").html(d.name); // used to be text(d.group);
           d3.select("#cancer-tooltip .cancer-value").html(d.value ? d.value +" g" : 'No tumor weight data');
-          
-          // var pctchngout = that.pctFormat(d.change)
-          // if (d.change == "N.A.") {
-          //   pctchngout = "N.A."
-          // };
-          // d3.select("#cancer-tooltip .cancer-change").html(pctchngout) 
         })
         .on("mouseout",function(d,i) { 
           d3.select(this)
@@ -490,11 +266,9 @@ cancer.Chart = function(){
             .each(that.totalSort(e.alpha))
             .each(that.buoyancy(e.alpha))
             .attr("cx", function(d) { 
-              // console.log('in totalLayout d.x is ' + d.x);
               return d.x; 
             })
             .attr("cy", function(d) { 
-              // console.log('in totalLayout d.y is ' + d.y);
               return d.y; 
             });
         })
@@ -622,8 +396,6 @@ cancer.Chart = function(){
  ** FILE: ChooseList.js
  ********************************/
 
-// var nytg = nytg || {};
-// var $j = jQuery;
 
 cancer.ChooseList = function(node, changeCallback) {
   this.container = $j(node);
